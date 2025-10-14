@@ -1,0 +1,8 @@
+[project]
+name:mirai
+language:c
+flag:g
+
+[include]
+path:.
+lib:mstd
