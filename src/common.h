@@ -2,7 +2,7 @@
 
 #include <mstd/common.h>
 
-#define VERSION "0.9.2"
+#define VERSION "0.9.3"
 
 #define length(array) sizeof(array) / sizeof(array[0])
 
