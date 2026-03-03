@@ -1,10 +1,25 @@
 #pragma once
 
-#include <mstd/common.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <stdint.h>
 
-#define VERSION "0.9.3"
+#define null ((void*)0)
+#define string char*
+
+#define sbyte int8_t
+#define byte uint8_t
+#define short int16_t
+#define ushort uint16_t
+#define int int32_t
+#define uint uint32_t
+#define long int64_t
+#define ulong uint64_t
 
 #define length(array) sizeof(array) / sizeof(array[0])
+
+#define VERSION "0.9.5"
 
 #define COLOR_MAIN "\033[38;5;43m"
 #define COLOR_ERROR "\033[31m"

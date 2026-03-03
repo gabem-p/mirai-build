@@ -1,7 +1,7 @@
 [project]
 name:mirai
 language:c
+flag:static
 
 [include]
 path:.
-lib:mstd

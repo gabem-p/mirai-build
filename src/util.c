@@ -2,9 +2,9 @@
 #include <string.h>
 #include <fnmatch.h>
 #include <stdarg.h>
-#include <src/common.h>
-#include <mstd/types/list.h>
-#include <mstd/types/stack.h>
+#include "src/common.h"
+#include "src/list.h"
+#include "src/stack.h"
 
 bool isdir(const string dir) {
     DIR* _dir = opendir(dir);
@@ -20,18 +20,18 @@ string path_concat(string prefix, string suffix) {
     return path;
 }
 
-list* recurse_dir(string dir, string pattern) {
-    stack* checkPaths = stack_new(64);
-    stack_push(checkPaths, dir);
+m_list* recurse_dir(string dir, string pattern) {
+    m_stack* checkPaths = m_stack_new(64);
+    m_stack_push(checkPaths, dir);
 
-    list* matches = list_new();
+    m_list* matches = m_list_new();
     struct dirent* entry;
 
     while (true) {
         if (checkPaths->count == 0)
             break;
 
-        string path = stack_pop(checkPaths);
+        string path = m_stack_pop(checkPaths);
         bool root = strcmp(path, ".") == 0;
 
         DIR* _dir = opendir(path);
@@ -47,14 +47,14 @@ list* recurse_dir(string dir, string pattern) {
 
             if (entry->d_type == DT_DIR) {
                 if (entry->d_name[0] != '.' && strcmp(entry->d_name, "build") != 0)
-                    stack_push(checkPaths, strdup(entryPath));
+                    m_stack_push(checkPaths, strdup(entryPath));
             } else if (fnmatch(pattern, entry->d_name, 0) == 0)
-                list_add(matches, strdup(entryPath));
+                m_list_add(matches, strdup(entryPath));
         }
 
         closedir(_dir);
     }
 
-    stack_cleanup(checkPaths);
+    m_stack_cleanup(checkPaths);
     return matches;
 }

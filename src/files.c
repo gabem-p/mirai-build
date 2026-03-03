@@ -1,5 +1,5 @@
 #include <string.h>
-#include <mstd/types/list.h>
+#include "src/list.h"
 #include "src/util.h"
 
 #include "files.h"
@@ -136,9 +136,9 @@ build_file* read_build_file() {
     }
 
     build_file* buildFile = calloc(1, sizeof(build_file));
-    buildFile->flags = list_new();
-    buildFile->paths = list_new();
-    buildFile->libs = list_new();
+    buildFile->flags = m_list_new();
+    buildFile->paths = m_list_new();
+    buildFile->libs = m_list_new();
 
     enum category category;
     while (!feof(file)) {
@@ -183,11 +183,11 @@ build_file* read_build_file() {
         case CATEGORY_PROJECT:
             keycheck("name", buildFile->name = value);
             keycheck("language", set_lang(buildFile, value));
-            keycheck("flag", list_add(buildFile->flags, value));
+            keycheck("flag", m_list_add(buildFile->flags, value));
             break;
         case CATEGORY_INCLUDE:
-            keycheck("path", list_add(buildFile->paths, value));
-            keycheck("lib", list_add(buildFile->libs, value));
+            keycheck("path", m_list_add(buildFile->paths, value));
+            keycheck("lib", m_list_add(buildFile->libs, value));
             break;
         }
         free(key);
@@ -196,8 +196,8 @@ build_file* read_build_file() {
     return buildFile;
 }
 
-list* read_build_cache() {
-    list* cache = list_new();
+m_list* read_build_cache() {
+    m_list* cache = m_list_new();
 
     if (!isdir("build")) {
         return cache;
@@ -216,21 +216,21 @@ list* read_build_cache() {
         string value = readto(file, '\n');
         entry->time = atol(value);
         free(value);
-        list_add(cache, entry);
+        m_list_add(cache, entry);
     }
 
     fclose(file);
     return cache;
 }
 
-void write_build_cache(list* cache) {
+void write_build_cache(m_list* cache) {
     FILE* file = fopen("build/build.cache", "w");
-    list_iterator* iterator = list_iter_new(cache);
-    for (uint i = 0; i < cache->length; i++, list_iter_next(iterator)) {
-        cache_entry* entry = (cache_entry*)list_iter_get(iterator);
+    m_list_iterator* iterator = m_list_iter_new(cache);
+    for (uint i = 0; i < cache->length; i++, m_list_iter_next(iterator)) {
+        cache_entry* entry = m_list_iter_get(iterator);
         fprintf(file, "%s:%li%s", entry->path, entry->time, i == cache->length - 1 ? "" : "\n");
     }
-    list_iter_cleanup(iterator);
+    m_list_iter_cleanup(iterator);
 
     fclose(file);
 }

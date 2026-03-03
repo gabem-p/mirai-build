@@ -3,20 +3,20 @@
 #include <sys/stat.h>
 #include <time.h>
 #include "subprocess.h"
-#include <mstd/types/list.h>
 #include "src/common.h"
+#include "src/list.h"
 #include "src/files.h"
 #include "src/util.h"
 
-void add_arg_list(list* items, string template, string command[], uint* j) {
-    list_iterator* iterator = list_iter_new(items);
-    for (uint i = 0; i < items->length; i++, (*j)++, list_iter_next(iterator)) {
-        string item = list_iter_get(iterator);
+void add_arg_list(m_list* items, string template, string command[], uint* j) {
+    m_list_iterator* iterator = m_list_iter_new(items);
+    for (uint i = 0; i < items->length; i++, (*j)++, m_list_iter_next(iterator)) {
+        string item = m_list_iter_get(iterator);
         string arg = malloc(strlen(template) + strlen(item));
         sprintf(arg, template, item);
         command[*j] = arg;
     }
-    list_iter_cleanup(iterator);
+    m_list_iter_cleanup(iterator);
 }
 
 void add_args(build_file* buildFile, string command[], uint* j) {
@@ -31,26 +31,26 @@ enum compile_result {
     RESULT_FAILURE
 };
 
-enum compile_result compile_file(string file, build_file* buildFile, list* cache, list* newCache) {
+enum compile_result compile_file(string file, build_file* buildFile, m_list* cache, m_list* newCache) {
     struct stat stats;
     stat(file, &stats);
     long modified = stats.st_mtim.tv_nsec * 1e-9 + stats.st_mtim.tv_sec;
 
     long lastCompile = 0;
-    list_iterator* iterator = list_iter_new(cache);
-    for (uint j = 0; j < cache->length; j++, list_iter_next(iterator)) {
-        cache_entry* entry = list_iter_get(iterator);
+    m_list_iterator* iterator = m_list_iter_new(cache);
+    for (uint j = 0; j < cache->length; j++, m_list_iter_next(iterator)) {
+        cache_entry* entry = m_list_iter_get(iterator);
         if (strcmp(entry->path, file) == 0) {
             lastCompile = entry->time;
             break;
         }
     }
-    list_iter_cleanup(iterator);
+    m_list_iter_cleanup(iterator);
 
     cache_entry* entry = malloc(sizeof(cache_entry));
     entry->path = file;
     entry->time = modified;
-    list_add(newCache, entry);
+    m_list_add(newCache, entry);
 
     if (modified <= lastCompile)
         return RESULT_NOCHANGE;
@@ -99,23 +99,23 @@ int build(build_file* buildFile, int argc, int argv) {
     if (!isdir("build/obj"))
         mkdir("build/obj", 0755);
 
-    list* files = recurse_dir(".", "*.c");
+    m_list* files = recurse_dir(".", "*.c");
 
-    list* cache = read_build_cache();
-    list* newCache = list_new();
+    m_list* cache = read_build_cache();
+    m_list* newCache = m_list_new();
 
     bool failed = false;
     bool modified = false;
 
-    list_iterator* fileIterator = list_iter_new(files);
-    for (int i = 0; i < files->length; i++, list_iter_next(fileIterator)) {
-        string file = list_iter_get(fileIterator);
+    m_list_iterator* fileIterator = m_list_iter_new(files);
+    for (int i = 0; i < files->length; i++, m_list_iter_next(fileIterator)) {
+        string file = m_list_iter_get(fileIterator);
 
         enum compile_result result = compile_file(file, buildFile, cache, newCache);
         failed |= result == RESULT_FAILURE;
         modified |= result != RESULT_NOCHANGE;
     }
-    list_iter_cleanup(fileIterator);
+    m_list_iter_cleanup(fileIterator);
 
     write_build_cache(newCache);
 
@@ -129,7 +129,7 @@ int build(build_file* buildFile, int argc, int argv) {
 
     int result = 0;
     if (modified) {
-        list* objects = recurse_dir("build/obj", "*.o");
+        m_list* objects = recurse_dir("build/obj", "*.o");
 
         char template[] = "build/%s";
         string outPath = malloc(sizeof(template) + strlen(buildFile->name) - 1);
@@ -142,11 +142,11 @@ int build(build_file* buildFile, int argc, int argv) {
         command[j++] = "/usr/bin/gcc";
         command[j++] = "-o";
         command[j++] = outPath;
-        list_iterator* iterator = list_iter_new(objects);
-        for (uint i = 0; i < objects->length; i++, list_iter_next(iterator)) {
-            command[j++] = list_iter_get(iterator);
+        m_list_iterator* iterator = m_list_iter_new(objects);
+        for (uint i = 0; i < objects->length; i++, m_list_iter_next(iterator)) {
+            command[j++] = m_list_iter_get(iterator);
         }
-        list_iter_cleanup(iterator);
+        m_list_iter_cleanup(iterator);
         add_args(buildFile, command, &j);
 
         struct subprocess_s process;

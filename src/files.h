@@ -1,8 +1,7 @@
 #pragma once
 
 #include "src/common.h"
-#include <mstd/types/list.h>
-#include <mstd/types/dict.h>
+#include "src/list.h"
 
 enum language {
     LANG_C
@@ -12,11 +11,11 @@ typedef struct {
     // project
     string name;
     enum language lang;
-    list* flags;
+    m_list* flags;
 
     // include
-    list* paths;
-    list* libs;
+    m_list* paths;
+    m_list* libs;
 } build_file;
 
 build_file* read_build_file();
@@ -26,5 +25,5 @@ typedef struct {
     long time;
 } cache_entry;
 
-list* read_build_cache();
-void write_build_cache(list* cache);
+m_list* read_build_cache();
+void write_build_cache(m_list* cache);
