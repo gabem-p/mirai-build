@@ -19,7 +19,7 @@ the project can be compiled by running `mirai build` in the same directory as th
 - **project**
     - *name* - the name of the outputed executable / library
     - *language* - the language of the project
-        - c - compiled with gcc
+        - c - compiled with `/bin/cc` (usually gcc or clang)
     - *flag* - add a custom flag to send to the compiler. the value is included verbatim with a dash prefix (e.g. `flag:static` becomes `-static`)
 - **include**
     - *path* - includes a directory (either relative or absolute)
