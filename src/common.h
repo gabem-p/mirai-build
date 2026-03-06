@@ -19,7 +19,7 @@
 
 #define length(array) sizeof(array) / sizeof(array[0])
 
-#define VERSION "0.9.5"
+#define VERSION "0.10.0"
 
 #define COLOR_MAIN "\033[38;5;43m"
 #define COLOR_ERROR "\033[31m"

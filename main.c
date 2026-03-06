@@ -4,14 +4,14 @@
 #include "src/commands.h"
 #include "src/files.h"
 
-int help();
+int help(build_file* buildFile, int argc, string argv[]);
 typedef struct {
     string name;
     int (*function)(build_file*, int, string[]);
 } command;
 const command commands[] = {{"help", help}, {"build", build}};
 
-int help() {
+int help(build_file* buildFile, int argc, string argv[]) {
     printf("%s%smirai build tool%s %s\n", COLOR_MAIN, COLOR_BOLD, COLOR_RESET, VERSION);
     printf("\n%sUsage:%s mirai <command> [args]\n", COLOR_BOLD, COLOR_RESET);
     printf("\n%sCommands:%s\n", COLOR_BOLD, COLOR_RESET);
@@ -23,7 +23,7 @@ int help() {
 
 int main(int argc, string argv[]) {
     if (argc == 1)
-        return help();
+        return help(null, argc, argv);
 
     build_file* buildFile = read_build_file();
     if (buildFile == null)
@@ -33,5 +33,5 @@ int main(int argc, string argv[]) {
         if (strcmp(argv[1], commands[i].name) == 0)
             return commands[i].function(buildFile, argc, argv);
     }
-    return help();
+    return help(null, argc, argv);
 }

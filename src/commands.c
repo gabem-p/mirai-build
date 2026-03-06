@@ -68,7 +68,7 @@ enum compile_result compile_file(string file, build_file* buildFile, m_list* cac
         6 + buildFile->paths->length + buildFile->libs->length + buildFile->flags->length,
         sizeof(string));
     uint j = 0;
-    command[j++] = "/usr/bin/gcc";
+    command[j++] = "/bin/cc";
     command[j++] = file;
     command[j++] = "-o";
     command[j++] = outPath;
@@ -90,7 +90,7 @@ enum compile_result compile_file(string file, build_file* buildFile, m_list* cac
     return result == 0 ? RESULT_SUCCESS : RESULT_FAILURE;
 }
 
-int build(build_file* buildFile, int argc, int argv) {
+int build(build_file* buildFile, int argc, string argv[]) {
     struct timespec start;
     clock_gettime(CLOCK_MONOTONIC_RAW, &start);
 
@@ -139,7 +139,7 @@ int build(build_file* buildFile, int argc, int argv) {
             4 + buildFile->paths->length + buildFile->libs->length + buildFile->flags->length + files->length,
             sizeof(string));
         uint j = 0;
-        command[j++] = "/usr/bin/gcc";
+        command[j++] = "/bin/cc";
         command[j++] = "-o";
         command[j++] = outPath;
         m_list_iterator* iterator = m_list_iter_new(objects);
@@ -173,7 +173,7 @@ int build(build_file* buildFile, int argc, int argv) {
     return EXIT_SUCCESS;
 };
 
-int run(build_file* buildFile, int argc, int argv) {
+int run(build_file* buildFile, int argc, string argv[]) {
     build(buildFile, argc, argv);
 
     string* command = calloc(2, sizeof(string));
